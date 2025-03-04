@@ -1,5 +1,6 @@
 import tkinter as tk
 import sqlite3 as sq
+from tkinter import filedialog as fd
 
 #window options
 root = tk.Tk()
@@ -14,20 +15,30 @@ txt.insert(tk.END, 'TESTTTTTTTTTTTTTTTTTTTTTS')
 def pop_message(s = 'error'):
   popup = tk.Tk()
   popup.title('Wiadomość')
-  popup.minsize(100,100)
+  popup.minsize(400,400)
   popup.update()
-  txt_mssg = tk.Text(popup,bg = "light cyan", font=10, )
+  txt_mssg = tk.Text(popup, border=0, font=10, )
   txt_mssg.place(x = 2, y =2, height = popup.winfo_height()-60, width = popup.winfo_width()-4)
   txt_mssg.insert(tk.END, s)
   butt = tk.Button(popup, bg = "light cyan", font=30, text='OK', command=popup.destroy)
   butt.place(x=20, y=popup.winfo_height()-50 )
+  popup.mainloop()
 
 
-def NEW():
+def NEW_F():
   txt.delete('1.0',tk.END)  
   
-def test():
+def OPEN_F():
   print(txt.index())
+
+def SAVE_F():
+  tk.Tk().withdraw()
+  file_path = fd.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+  #print(file_path.)
+  file = open(file_path, 'w')
+  file.write(txt.get('1.0',tk.END))
+  #print(txt.get('1.0',tk.END), file=file)
+  file.close()
 
 def run_sql():
   connect_sql = sq.connect('txt.db') 
@@ -57,9 +68,9 @@ menubar = tk.Menu(root)
 root.config(menu=menubar)
 file_menu = tk.Menu(menubar, tearoff=False)
 menubar.add_cascade(label='File', menu=file_menu)
-file_menu.add_command(label = 'New', command = NEW)
-file_menu.add_command(label = 'Open', command = test)
-file_menu.add_command(label = 'Save', command = lambda : print(3))
+file_menu.add_command(label = 'New', command = NEW_F)
+file_menu.add_command(label = 'Open', command = OPEN_F)
+file_menu.add_command(label = 'Save', command = SAVE_F)
 
 menubar.add_command(label='SQL', command = run_sql)
 root.update_idletasks()
@@ -70,4 +81,4 @@ while root.state() != 'closed':
   root.update()
   root.update_idletasks()
   txt.place(height = root.winfo_height()-40, width = root.winfo_width()-40)
-  
+exit()
