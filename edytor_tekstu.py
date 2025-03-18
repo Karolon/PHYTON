@@ -2,7 +2,10 @@ import tkinter as tk
 import sqlite3 as sq
 from tkinter import filedialog as fd
 from tkinter import messagebox as msgbox
-
+from functools import partial
+ 
+font_name='Arial'
+font_size=10
 #window options
 root = tk.Tk()
 root.title('Edytor txtxtxtxttxtt')
@@ -51,12 +54,7 @@ def OPEN_F():
     pass
   else:
     openFile()
-  
-  
-  
-  
-  
-  
+
 def SAVE_F():
   tk.Tk().withdraw()
   file_path = fd.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
@@ -87,6 +85,13 @@ def run_sql():
 
   connect_sql.commit()
 
+def change_size(n):
+  global font_name, font_size
+  font_size = n
+  txt.config(font=(font_name,font_size))
+  print(f'test{n}')
+
+
 #menu setup
 menubar = tk.Menu(root)
 root.config(menu=menubar)
@@ -98,6 +103,15 @@ file_menu.add_command(label = 'Save', command = SAVE_F)
 
 menubar.add_command(label='SQL', command = run_sql)
 root.update_idletasks()
+
+format_menu = tk.Menu(menubar, tearoff=False)
+menubar.add_cascade(label="Format", menu=format_menu)
+size_menu = tk.Menu(format_menu)
+format_menu.add_cascade(label="Font size", menu=size_menu)
+
+for i in range(1,20):
+  x = partial(change_size, i)
+  size_menu.add_command(label=f"{i}", command=x)
 
 
 
