@@ -1,6 +1,7 @@
 import tkinter as tk
 import sqlite3 as sq
 from tkinter import filedialog as fd
+from tkinter import messagebox as msgbox
 
 #window options
 root = tk.Tk()
@@ -24,20 +25,43 @@ def pop_message(s = 'error'):
   butt.place(x=20, y=popup.winfo_height()-50 )
   popup.mainloop()
 
-
 def NEW_F():
-  txt.delete('1.0',tk.END)  
+  ask = msgbox.askyesnocancel('Zapis', 'Czy chcesz zapisać obecny plik?')
+  if ask:
+    SAVE_F()
+    txt.delete('1.0',tk.END)
+  elif ask == None:
+    pass
+  else:
+    txt.delete('1.0',tk.END)
   
 def OPEN_F():
-  print(txt.index())
-
+  def openFile():
+    tk.Tk().withdraw()
+    file_path = fd.askopenfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+    file = open(file_path, 'r')
+    txt.delete('1.0',tk.END)  
+    txt.insert(tk.END, file.read())
+    file.close()
+  ask = msgbox.askyesnocancel('Zapis', 'Czy chcesz zapisać obecny plik?')
+  if ask:
+    SAVE_F()
+    openFile()
+  elif ask == None:
+    pass
+  else:
+    openFile()
+  
+  
+  
+  
+  
+  
 def SAVE_F():
   tk.Tk().withdraw()
   file_path = fd.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
-  #print(file_path.)
   file = open(file_path, 'w')
   file.write(txt.get('1.0',tk.END))
-  #print(txt.get('1.0',tk.END), file=file)
   file.close()
 
 def run_sql():
@@ -80,5 +104,8 @@ root.update_idletasks()
 while root.state() != 'closed':
   root.update()
   root.update_idletasks()
-  txt.place(height = root.winfo_height()-40, width = root.winfo_width()-40)
+  try:
+    txt.place(height = root.winfo_height()-40, width = root.winfo_width()-40)
+  except:
+    exit()
 exit()
