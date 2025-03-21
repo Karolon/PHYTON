@@ -2,8 +2,10 @@ import tkinter as tk
 import sqlite3 as sq
 from tkinter import filedialog as fd
 from tkinter import messagebox as msgbox
+from tkinter import PhotoImage 
 from functools import partial
- 
+
+
 font_name='Arial'
 font_size=10
 #window options
@@ -11,7 +13,7 @@ root = tk.Tk()
 root.title('Edytor txtxtxtxttxtt')
 root.geometry('500x350')
 root.minsize(300,200)
-    
+
 txt = tk.Text(root,bg = "light cyan", font=20)
 txt.place(x = 20, y =20, height = root.winfo_height()-40, width = root.winfo_width()-40)
 txt.insert(tk.END, 'TESTTTTTTTTTTTTTTTTTTTTTS') 
@@ -91,6 +93,9 @@ def change_size(n):
   txt.config(font=(font_name,font_size))
   print(f'test{n}')
 
+def change_color(color):
+  txt.config(fg=color)
+
 
 #menu setup
 menubar = tk.Menu(root)
@@ -108,10 +113,21 @@ format_menu = tk.Menu(menubar, tearoff=False)
 menubar.add_cascade(label="Format", menu=format_menu)
 size_menu = tk.Menu(format_menu)
 format_menu.add_cascade(label="Font size", menu=size_menu)
+color_menu = tk.Menu(format_menu)
+format_menu.add_cascade(label="Color", menu=color_menu)
 
-for i in range(1,20):
-  x = partial(change_size, i)
-  size_menu.add_command(label=f"{i}", command=x)
+font_sizes_list = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]
+for i in font_sizes_list:
+  size_menu.add_command(label=f"{i}", command=partial(change_size, i), font=(font_name, i))
+
+canva = tk.Canvas(root, height=10, width=10)
+canva.create_oval(0, 0, 10, 10, fill='black')
+canva.postscript
+
+colors_list=["Blue", "Lime", "Aqua", "Navy", "Green", "Teal", "Maroon", "Purple", "Olive", "Gray", "Silver", "Red", "Fuchsia", "Yellow", "White"]
+for c in colors_list:
+  color_menu.add_command(label=f"{c}", command=partial(change_color, c), image=)
+
 
 
 
