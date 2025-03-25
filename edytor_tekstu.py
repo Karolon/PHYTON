@@ -6,6 +6,7 @@ from tkinter import PhotoImage
 from functools import partial
 import PIL
 import PIL.Image
+import PIL.ImageDraw
 import PIL.ImageGrab
 
 font_name='Arial'
@@ -122,16 +123,20 @@ font_sizes_list = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]
 for i in font_sizes_list:
   size_menu.add_command(label=f"{i}", command=partial(change_size, i), font=(font_name, i))
 
-canva = tk.Canvas(root, height=15, width=15)
-canva.create_oval(5, 5, 15, 15, fill='black')
-canva.place(x=0, y=0)
-canva.pack()
-img = PIL.ImageGrab.grab(bbox=(canva.winfo_rootx(),canva.winfo_rooty(),canva.winfo_rootx() + canva.winfo_width(),canva.winfo_rooty() + canva.winfo_height()))
-img.save("img.png")
+#image for color icon
 
 colors_list=["Blue", "Lime", "Aqua", "Navy", "Green", "Teal", "Maroon", "Purple", "Olive", "Gray", "Silver", "Red", "Fuchsia", "Yellow", "White"]
-#for c in colors_list:
-  #color_menu.add_command(label=f"{c}", command=partial(change_color, c), image=img)
+for color in colors_list:
+  canva = tk.Canvas(root, height=15, width=15)  
+  canva.create_oval(5, 5, 15, 15, fill=f'{color}')
+  canva.postscript(file = f"img/{color}.eps")
+  img = PIL.ImageGrab.grab(bbox=(canva.winfo_rootx(),canva.winfo_rooty(),canva.winfo_rootx() + canva.winfo_width(),canva.winfo_rooty() + canva.winfo_height()))
+  canva.destroy()
+  img.save(f"img/{color}.png", "png")
+  #img = PIL.Image.open(f"img/{color}.eps") 
+  #img.save("a.png", 'png') 
+  color_menu.add_command(label=f"{color}", command=partial(change_color, color), image=tk.PhotoImage(f"img/{color}.png"))
+
 
 
 
