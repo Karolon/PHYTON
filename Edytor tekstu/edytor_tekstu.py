@@ -1,3 +1,4 @@
+#import needed 
 import tkinter as tk
 import sqlite3 as sq
 from tkinter import filedialog as fd
@@ -9,30 +10,43 @@ import PIL.Image
 import PIL.ImageDraw
 import PIL.ImageGrab
 
+#hard setup
 font_name='Arial'
 font_size=10
-#window options
+
+#main window options
 root = tk.Tk()
 root.title('Edytor txtxtxtxttxtt')
 root.geometry('500x350')
 root.minsize(300,200)
 
-txt = tk.Text(root,bg = "light cyan", font=20)
+txt = tk.Text(root,bg = "light cyan", font=20)  
 txt.place(x = 20, y =20, height = root.winfo_height()-40, width = root.winfo_width()-40)
 txt.insert(tk.END, 'TESTTTTTTTTTTTTTTTTTTTTTS') 
 
+#create pop message window
 def pop_message(s = 'error'):
+  #set up window
   popup = tk.Tk()
   popup.title('Wiadomość')
   popup.minsize(400,400)
   popup.update()
+  #message creation
   txt_mssg = tk.Text(popup, border=0, font=10, )
   txt_mssg.place(x = 2, y =2, height = popup.winfo_height()-60, width = popup.winfo_width()-4)
   txt_mssg.insert(tk.END, s)
+  #button creation
   butt = tk.Button(popup, bg = "light cyan", font=30, text='OK', command=popup.destroy)
   butt.place(x=20, y=popup.winfo_height()-50 )
   popup.mainloop()
 
+def table_window():
+  table = tk.Tk()
+  table.title('Table')
+  table.minsize(400,400)
+  table.update()
+  
+#new file
 def NEW_F():
   ask = msgbox.askyesnocancel('Zapis', 'Czy chcesz zapisać obecny plik?')
   if ask:
@@ -42,7 +56,8 @@ def NEW_F():
     pass
   else:
     txt.delete('1.0',tk.END)
-  
+
+#open file
 def OPEN_F():
   def openFile():
     tk.Tk().withdraw()
@@ -60,6 +75,7 @@ def OPEN_F():
   else:
     openFile()
 
+#safe file
 def SAVE_F():
   tk.Tk().withdraw()
   file_path = fd.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
@@ -67,6 +83,7 @@ def SAVE_F():
   file.write(txt.get('1.0',tk.END))
   file.close()
 
+#run sql code
 def run_sql():
   connect_sql = sq.connect('txt.db') 
   cursor = connect_sql.cursor()
@@ -90,57 +107,55 @@ def run_sql():
 
   connect_sql.commit()
 
+#change font size
 def change_size(n):
   global font_name, font_size
   font_size = n
   txt.config(font=(font_name,font_size))
   print(f'test{n}')
 
+#change font color
 def change_color(color):
   txt.config(fg=color)
 
+def create_font_size_menu(font_sizes_list = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]): #size_menu = size_menu
+  for i in font_sizes_list:
+    size_menu.add_command(label=f"{i}", command=partial(change_size, i), font=(font_name, i))
 
-#menu setup
+def create_font_color_menu(colors_list=["Blue", "Lime", "Aqua", "Navy", "Green", "Teal", "Maroon", "Purple", "Olive", "Gray", "Silver", "Red", "Fuchsia", "Yellow", "White"]):
+  for color in colors_list:
+    color_menu.add_command(label=f"{color}", command=partial(change_color, color), foreground = color)
+
+#menubar setup
 menubar = tk.Menu(root)
 root.config(menu=menubar)
 file_menu = tk.Menu(menubar, tearoff=False)
+
+#file menu setup
 menubar.add_cascade(label='File', menu=file_menu)
 file_menu.add_command(label = 'New', command = NEW_F)
 file_menu.add_command(label = 'Open', command = OPEN_F)
 file_menu.add_command(label = 'Save', command = SAVE_F)
 
+#run sql option
 menubar.add_command(label='SQL', command = run_sql)
 root.update_idletasks()
 
+#fromat menu
 format_menu = tk.Menu(menubar, tearoff=False)
 menubar.add_cascade(label="Format", menu=format_menu)
 size_menu = tk.Menu(format_menu)
 format_menu.add_cascade(label="Font size", menu=size_menu)
 color_menu = tk.Menu(format_menu)
 format_menu.add_cascade(label="Color", menu=color_menu)
+create_font_size_menu()
+create_font_color_menu()
 
-font_sizes_list = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72]
-for i in font_sizes_list:
-  size_menu.add_command(label=f"{i}", command=partial(change_size, i), font=(font_name, i))
-
-#image for color icon
-
-colors_list=["Blue", "Lime", "Aqua", "Navy", "Green", "Teal", "Maroon", "Purple", "Olive", "Gray", "Silver", "Red", "Fuchsia", "Yellow", "White"]
-for color in colors_list:
-  canva = tk.Canvas(root, height=15, width=15)  
-  canva.create_oval(5, 5, 15, 15, fill=f'{color}')
-  canva.postscript(file = f"img/{color}.eps")
-  img = PIL.ImageGrab.grab(bbox=(canva.winfo_rootx(),canva.winfo_rooty(),canva.winfo_rootx() + canva.winfo_width(),canva.winfo_rooty() + canva.winfo_height()))
-  canva.destroy()
-  img.save(f"img/{color}.png", "png")
-  #img = PIL.Image.open(f"img/{color}.eps") 
-  #img.save("a.png", 'png') 
-  color_menu.add_command(label=f"{color}", command=partial(change_color, color), image=tk.PhotoImage(f"img/{color}.png"))
+#table menu
+menubar.add_command(label='Table', command=table_window)
 
 
-
-
-
+#some loop that makes it work
 while root.state() != 'closed':
   root.update()
   root.update_idletasks()
