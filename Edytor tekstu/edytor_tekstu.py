@@ -40,10 +40,121 @@ def pop_message(s = 'error'):
   butt.place(x=20, y=popup.winfo_height()-50 )
   popup.mainloop()
 
-def table_window():
+
+#create table window
+def table_window(size_y=5, size_x=5):
+  board = []
+  def add_column():
+    nonlocal size_x
+    for y in range(size_y):
+      t = tk.Entry(table)
+      board[y].append(t)
+      t.grid(row=y, column=size_x)
+    frame_col.grid(row=0, column=size_x+1)
+    size_x += 1
+    table.update()
+  
+  def add_row():
+    nonlocal size_y
+    row = []
+    for x in range(size_x):
+      t = tk.Entry(table)
+      row.append(t)
+      t.grid(row=size_y, column=x)
+    board.append(row)
+    frame_row.grid(column=0, row=size_y+1)
+    size_y += 1
+    table.update()
+    
+  def remove_column():
+    nonlocal size_x
+    for y in range(size_y):
+      board[y][-1].destroy()
+      del board[y][-1]
+    frame_col.grid(row=0, column=size_x-1)
+    size_x -= 1
+    table.update()
+    
+  def remove_row():
+    nonlocal size_y
+    for x in range(size_x):
+      board[-1][x].destroy()
+    del board[-1]
+    frame_row.grid(row=size_y-1, column=0) 
+    size_y -= 1
+    table.update()
+  
+  def export_as_csv():
+    tk.Tk().withdraw()
+    file_path = fd.asksaveasfilename(defaultextension=".csv", filetypes=[("Comma-separated values", "*.csv"), ("All files", "*.*")])
+    file = open(file_path, 'w')
+    for y in range(size_y):
+      for x in range(size_x):
+        print(f'{board[y][x].get()};', file=file, end="")
+      print(file=file)
+    file.close()
+
+  def import_from_csv():
+    nonlocal size_x, size_y
+    tk.Tk().withdraw()
+    file_path = fd.askopenfilename(defaultextension=".csv", filetypes=[("Comma-separated values", "*.csv")])
+    file = open(file_path, 'r')
+    values = []
+    
+    for f in file.read().split():
+      values.append(f.split(sep=";"))
+    height = len(values)
+    if height > size_y:
+      for i in range(height-size_y):
+        add_row()
+        
+    width = len(values[0])
+    if width > size_x:   
+      for i in range(width-size_x):
+        add_column()
+        
+    for y in range(size_y):
+      for x in range(size_x):
+        board[y][x].delete(0,tk.END)
+        board[y][x].insert(0,values[y][x])
+        
+    file.close()
+    
   table = tk.Tk()
   table.title('Table')
   table.minsize(400,400)
+  table.update()
+    
+  table_menu = tk.Menu(table)
+  table.config(menu=table_menu)
+  export_menu = tk.Menu(table)
+  table_menu.add_cascade(label="Export", menu=export_menu)
+  export_menu.add_command(label="Export as csv", command=export_as_csv)
+  import_menu = tk.Menu(table)
+  table_menu.add_cascade(label="Import", menu=import_menu)
+  import_menu.add_command(label="Import from csv", command=import_from_csv)
+  
+  for y in range(size_y):
+    row = []
+    for x in range(size_x):
+      t = tk.Entry(table)
+      t.grid(row=y, column=x)
+      row.append(t)
+    board.append(row)
+      
+  frame_col = tk.Frame(table)
+  frame_col.grid(row=0, column=size_x+1, rowspan=2)
+  button_col_add = tk.Button(frame_col, text="+", command=add_column)
+  button_col_add.grid(row=0, column=0)
+  button_col_remove = tk.Button(frame_col, text="-", command=remove_column)
+  button_col_remove.grid(row=1, column=0, sticky="S")
+  
+  frame_row = tk.Frame(table)
+  frame_row.grid(row=size_y+1, column=0)
+  button_row_add = tk.Button(frame_row, text="+", command=add_row)
+  button_row_add.grid(row=0, column=0)
+  button_row_remove = tk.Button(frame_row, text="-", command=remove_row)
+  button_row_remove.grid(row=0, column=1)  
   table.update()
   
 #new file
