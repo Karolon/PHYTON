@@ -68,6 +68,8 @@ def table_window(size_y=5, size_x=5):
     
   def remove_column():
     nonlocal size_x
+    if size_x == 1:
+      return
     for y in range(size_y):
       board[y][-1].destroy()
       del board[y][-1]
@@ -77,6 +79,8 @@ def table_window(size_y=5, size_x=5):
     
   def remove_row():
     nonlocal size_y
+    if size_y == 1:
+      return
     for x in range(size_x):
       board[-1][x].destroy()
     del board[-1]
@@ -120,6 +124,22 @@ def table_window(size_y=5, size_x=5):
         
     file.close()
     
+  def chaneg_size(size):
+    nonlocal size_y, size_x
+    x, y = size
+    if x < size_x:
+      for i in range(size_x-x):
+        remove_column()
+    else:
+      for i in range(x-size_x):
+        add_column()
+    if y < size_y:
+      for i in range(size_y-y):
+        remove_row()
+    else:
+      for i in range(y-size_y):
+        add_row()
+
   table = tk.Tk()
   table.title('Table')
   table.minsize(400,400)
@@ -133,7 +153,11 @@ def table_window(size_y=5, size_x=5):
   import_menu = tk.Menu(table)
   table_menu.add_cascade(label="Import", menu=import_menu)
   import_menu.add_command(label="Import from csv", command=import_from_csv)
-  
+  grid_menu = tk.Menu(table)
+  table_menu.add_cascade(label="Grid size", menu=grid_menu)
+  for i in [(5, 4), (6, 10)]:
+    grid_menu.add_command(label=f'{i[0]} x {i[1]}', command=partial(chaneg_size, i))
+
   for y in range(size_y):
     row = []
     for x in range(size_x):
@@ -141,6 +165,9 @@ def table_window(size_y=5, size_x=5):
       t.grid(row=y, column=x)
       row.append(t)
     board.append(row)
+    
+  scroll_h = tk.Scrollbar(table)
+  scroll_h.pack(side=tk.RIGHT, fill="y")
       
   frame_col = tk.Frame(table)
   frame_col.grid(row=0, column=size_x+1, rowspan=2)
