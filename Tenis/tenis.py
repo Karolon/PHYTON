@@ -11,6 +11,7 @@ menubar = tk.Menu(root)
 root.config(menu=menubar)
 
 
+#Player UI
 
 player1 = ''
 player2 = ''
@@ -49,9 +50,17 @@ player2_entry.grid(row=0,column=2)
 enter2 = tk.Button(text="Potwierdz", master=root, command=name2)
 enter2.grid(row=1,column=2)
 
-Score_buttons = tk.Frame(root)
-Score_buttons.grid(row=4, column=0, columnspan=3)
+#
+#everything socre related
+#
 
+def serve_calculator(n):
+    global player1, player2
+    if n % 4 in [0,1]:
+        return player1
+    else:
+        return player2
+    
 def refresh_socore_label():
     Label_score.config(text=f'{score[0]} : {score[1]}')
     label_serve.config(text=f'Serwis:\n{serve_calculator(score[0]+score[1])}')
@@ -76,25 +85,30 @@ def descored2():
     score[1 ] -= 1
     refresh_socore_label()
 
+#Frame for score buttons
+Score_buttons = tk.Frame(root)
+Score_buttons.grid(row=4, column=0, columnspan=3)
+
+#remove score buttons
 score_menu = tk.Menu(menubar, tearoff= False)
 menubar.add_cascade(label="Wynik", menu=score_menu)
 score_menu.add_command(label="-1 gracz 1 (po lewej)", command=descored1)
 score_menu.add_command(label="-1 gracz 2 (po prawej)", command=descored2)
+
+#add score buttons
 score1 = tk.Button(text='Player 1', master=Score_buttons, width= 50, height=10, command=scored1)
 score1.grid(row=0,column=0)
 
 score2 = tk.Button(text='Player 2', master=Score_buttons, width= 50, height=10, command=scored2)
 score2.grid(row=0,column=1)
 
-def serve_calculator(n):
-    global player1, player2
-    if n % 4 in [0,1]:
-        return player1
-    else:
-        return player2
+
+#Serve buttons
+#
 
 label_serve = tk.Label(root, text = f'Serwis:\n{serve_calculator(score[0]+score[1])}')
 label_serve.grid(row=3, column=1)
+
 
 while root.state() != 'closed':
   root.update()
